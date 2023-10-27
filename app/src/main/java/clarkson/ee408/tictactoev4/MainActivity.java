@@ -21,12 +21,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView status;
 
     private Gson gson;
+    private int player;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         gson = new Gson();
-        tttGame = new TicTacToe( );
+        tttGame = new TicTacToe( player );
         buildGuiByCode( );
     }
 

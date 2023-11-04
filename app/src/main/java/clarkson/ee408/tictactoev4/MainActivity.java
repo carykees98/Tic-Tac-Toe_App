@@ -203,8 +203,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void showNewGameDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("This is fun");
-        alert.setMessage("Play again?");
+        alert.setTitle(tttGame.result());
+        alert.setMessage("Do you want to play again?");
         PlayDialog playAgain = new PlayDialog();
         alert.setPositiveButton("YES", playAgain);
         alert.setNegativeButton("NO", playAgain);

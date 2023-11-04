@@ -81,7 +81,25 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+    public void sendMove(int move) {
+        // Convert the move to a string
+        String moveData = Integer.toString(move);
 
+        // Create a request with the move data
+        Request moveRequest = new Request(Request.RequestType.SEND_MOVE, moveData);
+
+        // Send the request to the server
+        AppExecutors.getInstance().networkIO().execute(() -> {
+            try {
+                // Sending the move to the server
+                SocketClient.getInstance().sendRequest(moveRequest, Request.class);
+                // Note: Assuming you don't need a response from the server here.
+            } catch (IOException e) {
+                Log.e("GameClient", "IOException when sending move: " + e.getMessage());
+                // Handle exception, possibly with a user notification or a retry mechanism
+            }
+        });
+    }
     public void buildGuiByCode() {
         // Get width of the screen
         Point size = new Point();
@@ -199,8 +217,11 @@ public class MainActivity extends AppCompatActivity {
 
             for (int row = 0; row < TicTacToe.SIDE; row++)
                 for (int column = 0; column < TicTacToe.SIDE; column++)
-                    if (v == buttons[row][column])
+                    if (v == buttons[row][column]) {
+                        int moveIndex = row * TicTacToe.SIDE + column;
+                        sendMove(moveIndex);
                         update(row, column);
+                    }
         }
     }
 

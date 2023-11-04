@@ -206,9 +206,28 @@ public class MainActivity extends AppCompatActivity {
         alert.setTitle(tttGame.result());
         alert.setMessage("Do you want to play again?");
         PlayDialog playAgain = new PlayDialog();
-        alert.setPositiveButton("YES", playAgain);
-        alert.setNegativeButton("NO", playAgain);
-        alert.show();
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (tttGame.get_player() == 1) {
+                    tttGame.set_player(2);
+                } else {
+                    tttGame.set_player(1);
+                }
+                tttGame.resetGame();
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Code to handle user's choice to not play again. Maybe close the app or navigate to another activity.
+                finish();
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog dialog = alert.create();
+        dialog.show();
     }
 
     private class ButtonHandler implements View.OnClickListener {

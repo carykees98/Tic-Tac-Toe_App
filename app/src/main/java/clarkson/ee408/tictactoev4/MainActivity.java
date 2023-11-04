@@ -56,25 +56,27 @@ public class MainActivity extends AppCompatActivity {
         updateTurnStatus();
     }
 
-
     public void requestMove() {
         if (shouldRequestMove) {
-            Request request = new Request(Request.RequestType.REQUEST_MOVE, "");
-            final Response[] response = new Response[1];
-            AppExecutors.getInstance().networkIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        response[0] = SocketClient.getInstance().sendRequest(request, Response.class);
-                    } catch (IOException ioe) {
-                        Log.e("IOException", Objects.requireNonNull(ioe.getMessage()));
+            Request moveRequest = new Request(Request.RequestType.REQUEST_MOVE, "");
+
+            AppExecutors.getInstance().networkIO().execute(() -> {
+                try {
+                    Response response = SocketClient.getInstance().sendRequest(moveRequest, Response.class);
+
+                    // Parse the response to get the move integer
+                    if (response != null && response.getMessage() != null) {
+                        final int moveIndex = Integer.parseInt(response.getMessage().trim());
+                        final int row = moveIndex / 3; // Dividing by 3 gives the row index
+                        final int col = moveIndex % 3; // Modulo 3 gives the column index
+
+                        AppExecutors.getInstance().mainThread().execute(() -> {
+                            update(row, col);
+                        });
                     }
-                }
-            });
-            AppExecutors.getInstance().mainThread().execute(new Runnable() {
-                @Override
-                public void run() {
-                    update(response[0].getMessage());
+                } catch (IOException | NumberFormatException ioe) {
+                    Log.e("GameClient", "Error in requestMove: " + ioe.getMessage());
+                    // Handle exception
                 }
             });
         }

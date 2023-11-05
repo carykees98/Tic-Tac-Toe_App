@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private TicTacToe tttGame;
     private Button[][] buttons;
     private TextView status;
-
     private Gson gson;
     private int player;
     private boolean shouldRequestMove;
@@ -81,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
     public void sendMove(int move) {
         // Convert the move to a string
         String moveData = Integer.toString(move);
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public void buildGuiByCode() {
         // Get width of the screen
         Point size = new Point();

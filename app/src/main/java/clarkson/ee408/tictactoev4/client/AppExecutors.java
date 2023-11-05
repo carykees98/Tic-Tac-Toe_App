@@ -42,8 +42,8 @@ public class AppExecutors {
      * A private constructor that instantiate the class and set attributes
      * Can be accessed only the within the class (for singleton design pattern)
      *
-     * @param diskIO Executor for disk I/O threads (e.g., save or read files, query local database)
-     * @param networkIO Executor for network I/O threads (e.g., communicate with the internet)
+     * @param diskIO     Executor for disk I/O threads (e.g., save or read files, query local database)
+     * @param networkIO  Executor for network I/O threads (e.g., communicate with the internet)
      * @param mainThread Executor for the main thread (e.g., change text on the user interface)
      */
     private AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
@@ -70,6 +70,7 @@ public class AppExecutors {
 
     /**
      * Getter for disk thread executor
+     *
      * @return disk IO thread executor
      */
     public Executor diskIO() {
@@ -78,6 +79,7 @@ public class AppExecutors {
 
     /**
      * Getter for main thread executor
+     *
      * @return main thread executor
      */
     public Executor mainThread() {
@@ -86,6 +88,7 @@ public class AppExecutors {
 
     /**
      * Getter for network thread executor
+     *
      * @return network IO thread executor
      */
     public Executor networkIO() {

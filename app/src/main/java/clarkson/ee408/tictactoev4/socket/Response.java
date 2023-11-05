@@ -19,8 +19,7 @@ public class Response {
 
     /**
      * Response object constructor
-     *
-     * @param status  ResponseStatus::status
+     * @param status ResponseStatus::status
      * @param message string message
      */
     public Response(ResponseStatus status, String message) {

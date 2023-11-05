@@ -17,7 +17,6 @@ public class Request {
 
     /**
      * Request constructor that sets type and data
-     *
      * @param type
      * @param data
      */
@@ -28,16 +27,14 @@ public class Request {
 
     /**
      * Get type of request
-     *
-     * @return request tyoe
+     * @return request type
      */
     public RequestType getType() {
         return m_Type;
     }
 
     /**
-     * Ser request tyoe
-     *
+     * Set request type
      * @param type value to set request to
      */
     public void setType(RequestType type) {
@@ -46,7 +43,6 @@ public class Request {
 
     /**
      * Get Request object data
-     *
      * @return data
      */
     public String getData() {

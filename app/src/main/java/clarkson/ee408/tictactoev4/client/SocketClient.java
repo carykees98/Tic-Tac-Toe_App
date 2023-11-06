@@ -11,7 +11,7 @@ public class SocketClient {
 
     // TODO change this to match the server ip and port:
     // Should this be moved somewhere else?
-    private String server_ip = "128.153.177.125";
+    private String server_ip = "0.0.0.0";
     private int server_port = 5000;
 
     // Static Variable for singleton design
@@ -39,6 +39,7 @@ public class SocketClient {
         if (s_Instance == null) {
             s_Instance = new SocketClient();
         }
+
         return s_Instance;
     }
 
@@ -48,14 +49,13 @@ public class SocketClient {
         if (socket != null) socket.close();
     }
 
-    public <T> T sendRequest(Object request, Class<T> responseClass) throws IOException {
+    public synchronized <T> T sendRequest(Object request, Class<T> responseClass) throws IOException {
         // Send Request
         String serializedRequest = gson.toJson(request);
         outputStream.writeUTF(serializedRequest);
 
         // Receive response
         String responseStr = inputStream.readUTF();
-        Log.d("responseStr", responseStr);
         return gson.fromJson(responseStr, responseClass);
     }
 }

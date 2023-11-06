@@ -18,11 +18,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import clarkson.ee408.tictactoev4.client.AppExecutors;
 import clarkson.ee408.tictactoev4.client.SocketClient;
 import clarkson.ee408.tictactoev4.socket.GamingResponse;
 import clarkson.ee408.tictactoev4.socket.Request;
+import clarkson.ee408.tictactoev4.socket.Response;
 
 public class MainActivity extends AppCompatActivity {
     private TicTacToe tttGame;
@@ -53,31 +56,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void requestMove() {
-        if (shouldRequestMove) {
-            Request moveRequest = new Request(Request.RequestType.REQUEST_MOVE, "");
-            final GamingResponse[] response = new GamingResponse[1];
+        if (!shouldRequestMove) return;
 
+        Request moveRequest = new Request(Request.RequestType.REQUEST_MOVE, "");
+        AtomicReference<GamingResponse> response = new AtomicReference<>(new GamingResponse());
+
+        synchronized (response) {
             AppExecutors.getInstance().networkIO().execute(() -> {
                 try {
-                    response[0] = SocketClient.getInstance().sendRequest(moveRequest, GamingResponse.class);
-                } catch (IOException | NumberFormatException ioe) {
+                    response.set(SocketClient.getInstance().sendRequest(moveRequest, GamingResponse.class));
+                    if (response.get() == null) return;
+
+                    AppExecutors.getInstance().mainThread().execute(() -> {
+                        // Parse the response to get the move integer
+                        int move = response.get().getMove();
+                        if (move == -1) return;
+
+                        Log.d("moveIndex", Integer.toString(move));
+                        int row = move / 3; // Dividing by 3 gives the row index
+                        int col = move % 3; // Modulo 3 gives the column index
+                        Log.d("row col", row + ", " + col);
+                        update(row, col);
+                    });
+                } catch (IOException ioe) {
                     Log.e("GameClient", "Error in requestMove: " + ioe.getMessage());
                     // Handle exception
                 }
             });
 
-            AppExecutors.getInstance().mainThread().execute(() -> {
-                // Parse the response to get the move integer
-                if (response[0] != null && response[0].getMove() != -1) {
-                    int moveIndex = response[0].getMove();
-                    Log.d("moveIndex", Integer.toString(moveIndex));
-                    int row = moveIndex / 3; // Dividing by 3 gives the row index
-                    int col = moveIndex % 3; // Modulo 3 gives the column index
-                    update(row, col);
-                }
 
-            });
         }
+
     }
 
     public void sendMove(int move) {
@@ -91,13 +100,15 @@ public class MainActivity extends AppCompatActivity {
         AppExecutors.getInstance().networkIO().execute(() -> {
             try {
                 // Sending the move to the server
-                SocketClient.getInstance().sendRequest(moveRequest, Request.class);
+                SocketClient.getInstance().sendRequest(moveRequest, Response.class);
                 // Note: Assuming you don't need a response from the server here.
             } catch (IOException e) {
                 Log.e("GameClient", "IOException when sending move: " + e.getMessage());
                 // Handle exception, possibly with a user notification or a retry mechanism
             }
         });
+
+        Log.d("move sent", "move sent");
     }
 
     public void buildGuiByCode() {

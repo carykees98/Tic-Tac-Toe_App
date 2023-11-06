@@ -2,7 +2,7 @@ package clarkson.ee408.tictactoev4;
 
 public class TicTacToe {
     public static final int SIDE = 3;
-    private int turn;
+    private int turn = 0;
     private int player;
     private int[][] game;
 
@@ -22,7 +22,7 @@ public class TicTacToe {
                 turn = 1;
             return currentTurn;
         } else
-            throw new IndexOutOfBoundsException();
+            return 0;
     }
 
     public int whoWon() {
@@ -81,7 +81,7 @@ public class TicTacToe {
         for (int row = 0; row < SIDE; row++)
             for (int col = 0; col < SIDE; col++)
                 game[row][col] = 0;
-        turn = 1;
+        if (turn == 0) turn = 1;
     }
 
     public String result() {

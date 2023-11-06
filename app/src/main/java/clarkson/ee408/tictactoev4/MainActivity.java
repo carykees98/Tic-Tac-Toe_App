@@ -24,6 +24,7 @@ import java.util.concurrent.Executor;
 
 import clarkson.ee408.tictactoev4.client.AppExecutors;
 import clarkson.ee408.tictactoev4.client.SocketClient;
+import clarkson.ee408.tictactoev4.socket.GamingResponse;
 import clarkson.ee408.tictactoev4.socket.Request;
 import clarkson.ee408.tictactoev4.socket.Response;
 
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private Button[][] buttons;
     private TextView status;
     private Gson gson;
-    private int player;
+    private int player = 2;
     private boolean shouldRequestMove;
 
     @Override
@@ -58,25 +59,27 @@ public class MainActivity extends AppCompatActivity {
     public void requestMove() {
         if (shouldRequestMove) {
             Request moveRequest = new Request(Request.RequestType.REQUEST_MOVE, "");
+            final GamingResponse[] response = new GamingResponse[1];
 
             AppExecutors.getInstance().networkIO().execute(() -> {
                 try {
-                    Response response = SocketClient.getInstance().sendRequest(moveRequest, Response.class);
-
-                    // Parse the response to get the move integer
-                    if (response != null && response.getMessage() != null) {
-                        final int moveIndex = Integer.parseInt(response.getMessage().trim());
-                        final int row = moveIndex / 3; // Dividing by 3 gives the row index
-                        final int col = moveIndex % 3; // Modulo 3 gives the column index
-
-                        AppExecutors.getInstance().mainThread().execute(() -> {
-                            update(row, col);
-                        });
-                    }
+                    response[0] = SocketClient.getInstance().sendRequest(moveRequest, GamingResponse.class);
                 } catch (IOException | NumberFormatException ioe) {
                     Log.e("GameClient", "Error in requestMove: " + ioe.getMessage());
                     // Handle exception
                 }
+            });
+
+            AppExecutors.getInstance().mainThread().execute(() -> {
+                // Parse the response to get the move integer
+                if (response[0] != null && response[0].getMove() != -1) {
+                    int moveIndex = response[0].getMove();
+                    Log.d("moveIndex", Integer.toString(moveIndex));
+                    int row = moveIndex / 3; // Dividing by 3 gives the row index
+                    int col = moveIndex % 3; // Modulo 3 gives the column index
+                    update(row, col);
+                }
+
             });
         }
     }
@@ -168,8 +171,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void update(int row, int col) {
-        updateTurnStatus();
+
+        Log.d("update", "update");
         int play = tttGame.play(row, col);
+        updateTurnStatus();
         if (play == 1)
             buttons[row][col].setText("X");
         else if (play == 2)
@@ -183,9 +188,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateTurnStatus() {
-        if (tttGame.get_player() == player) {
-            shouldRequestMove = false;
+        if (tttGame.getTurn() == player) {
             enableButtons(true);
+            shouldRequestMove = false;
+            status.setText(tttGame.result());
+        } else {
+            enableButtons(false);
+            shouldRequestMove = true;
+            status.setText(tttGame.result());
         }
     }
 
@@ -207,24 +217,8 @@ public class MainActivity extends AppCompatActivity {
         alert.setTitle(tttGame.result());
         alert.setMessage("Do you want to play again?");
         PlayDialog playAgain = new PlayDialog();
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (tttGame.get_player() == 1) {
-                    tttGame.set_player(2);
-                } else {
-                    tttGame.set_player(1);
-                }
-                tttGame.resetGame();
-            }
-        });
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Code to handle user's choice to not play again. Maybe close the app or navigate to another activity.
-                finish();
-            }
-        });
+        alert.setPositiveButton("Yes", playAgain);
+        alert.setNegativeButton("No", playAgain);
 
         // Create and show the AlertDialog
         AlertDialog dialog = alert.create();
@@ -249,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(DialogInterface dialog, int id) {
             if (id == -1) /* YES button */ {
                 tttGame.resetGame();
-                enableButtons(true);
                 updateTurnStatus();
                 resetButtons();
                 status.setBackgroundColor(Color.GREEN);

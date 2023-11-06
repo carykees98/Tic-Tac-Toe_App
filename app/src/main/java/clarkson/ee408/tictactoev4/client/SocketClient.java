@@ -1,5 +1,7 @@
 package clarkson.ee408.tictactoev4.client;
 
+import android.util.Log;
+
 import java.io.*;
 import java.net.*;
 
@@ -9,7 +11,7 @@ public class SocketClient {
 
     // TODO change this to match the server ip and port:
     // Should this be moved somewhere else?
-    private String server_ip = "0.0.0.0";
+    private String server_ip = "128.153.210.37";
     private int server_port = 5000;
 
     // Static Variable for singleton design
@@ -52,6 +54,7 @@ public class SocketClient {
         outputStream.writeUTF(serializedRequest);
 
         String responseStr = inputStream.readUTF();
+        Log.d("responseStr", responseStr);
         return gson.fromJson(responseStr, responseClass);
     }
 }

@@ -11,28 +11,35 @@ public class SocketClient {
 
     // TODO change this to match the server ip and port:
     // Should this be moved somewhere else?
-    private String server_ip = "128.153.210.37";
+    private String server_ip = "128.153.177.125";
     private int server_port = 5000;
 
     // Static Variable for singleton design
-    private static SocketClient instance;
+    private static SocketClient s_Instance;
 
     // Class Attributes
     private Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
-    private Gson gson;
+    private final Gson gson = new Gson();
 
     // Class Methods
     private SocketClient() {
-        this.gson = new Gson();
+        try {
+            socket = new Socket(server_ip, server_port);
+
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
+        } catch (Exception e) {
+            Log.e("SocketClient", e.getMessage());
+        }
     }
 
     public static synchronized SocketClient getInstance() {
-        if (instance == null) {
-            instance = new SocketClient();
+        if (s_Instance == null) {
+            s_Instance = new SocketClient();
         }
-        return instance;
+        return s_Instance;
     }
 
     public void close() throws IOException {
@@ -42,17 +49,11 @@ public class SocketClient {
     }
 
     public <T> T sendRequest(Object request, Class<T> responseClass) throws IOException {
+        // Send Request
         String serializedRequest = gson.toJson(request);
-
-        if (socket == null || socket.isClosed()) {
-            // Provide the server IP and Port here
-            socket = new Socket(server_ip, server_port);
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-        }
-
         outputStream.writeUTF(serializedRequest);
 
+        // Receive response
         String responseStr = inputStream.readUTF();
         Log.d("responseStr", responseStr);
         return gson.fromJson(responseStr, responseClass);

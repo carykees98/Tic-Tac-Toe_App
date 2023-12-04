@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -262,6 +263,52 @@ public class MainActivity extends AppCompatActivity {
                         update(row, column);
                     }
         }
+    }
+
+    public void abortGame() {
+        // Create an ABORT_GAME request
+        Request abortRequest = new Request(Request.RequestType.ABORT_GAME, "");
+
+        // Use SocketClient to send the request
+        AppExecutors.getInstance().networkIO().execute(() -> {
+            try {
+                Response response = SocketClient.getInstance().sendRequest(abortRequest, Response.class);
+
+                // Handle the response on the main thread
+                AppExecutors.getInstance().mainThread().execute(() -> {
+                    if (response.getStatus() == Response.ResponseStatus.SUCCESS) {
+                        Toast.makeText(MainActivity.this, "Game aborted successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed to abort the game", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IOException ioe) {
+                Log.e("MainActivity", "Error in abortGame: " + ioe.getMessage());
+            }
+        });
+    }
+
+    public void completeGame() {
+        // Create an COMPLETE_GAME request
+        Request completeRequest = new Request(Request.RequestType.COMPLETE_GAME, "");
+
+        // Use SocketClient to send the request
+        AppExecutors.getInstance().networkIO().execute(() -> {
+            try {
+                Response response = SocketClient.getInstance().sendRequest(completeRequest, Response.class);
+
+                // Handle the response on the main thread
+                AppExecutors.getInstance().mainThread().execute(() -> {
+                    if (response.getStatus() == Response.ResponseStatus.SUCCESS) {
+                        Toast.makeText(MainActivity.this, "Game completed successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed to complete the game", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IOException ioe) {
+                Log.e("MainActivity", "Error in completeGame: " + ioe.getMessage());
+            }
+        });
     }
 
     private class PlayDialog implements DialogInterface.OnClickListener {

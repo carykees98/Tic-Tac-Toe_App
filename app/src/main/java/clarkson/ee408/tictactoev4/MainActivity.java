@@ -71,8 +71,28 @@ public class MainActivity extends AppCompatActivity {
                     if (response.get() == null) return;
 
                     AppExecutors.getInstance().mainThread().execute(() -> {
-                        // Parse the response to get the move integer
-                        int move = response.get().getMove();
+                        GamingResponse gamingResponse = response.get();
+
+                        // Check if the game is still active
+                        if (!gamingResponse.isActive()) {
+                            shouldRequestMove = false;
+                            tttGame = null;
+
+                            // Disable all buttons
+                            for (int row = 0; row < buttons.length; row++) {
+                                for (int col = 0; col < buttons[row].length; col++) {
+                                    buttons[row][col].setEnabled(false);
+                                }
+                            }
+
+                            status.setBackgroundColor(Color.RED);
+                            status.setText(tttGame.result());
+
+                            return;
+                        }
+
+                        // Continue with the move if the game is active
+                        int move = gamingResponse.getMove();
                         if (move == -1) return;
 
                         Log.d("moveIndex", Integer.toString(move));
@@ -86,10 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     // Handle exception
                 }
             });
-
-
         }
-
     }
 
     public void sendMove(int move) {

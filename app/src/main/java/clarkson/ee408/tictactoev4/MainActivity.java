@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gson = new Gson();
+        player = getIntent().getIntExtra("PLAYER_KEY", 1);
         tttGame = new TicTacToe(player);
         buildGuiByCode();
 

@@ -1,5 +1,6 @@
 package clarkson.ee408.tictactoev4;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -222,7 +223,9 @@ public class PairingActivity extends AppCompatActivity {
         // TODO: set shouldUpdatePairing to false
         shouldUpdatePairing = false;
         // TODO: start MainActivity and pass player as data
-        startActivity(MainActivity.createIntent(this, player));
+        Intent intent = new Intent(PairingActivity.this, MainActivity.class);
+        intent.putExtra("PLAYER_KEY", player);
+        startActivity(intent);
     }
 
     @Override

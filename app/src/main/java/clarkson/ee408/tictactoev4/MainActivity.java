@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         tttGame = new TicTacToe(player);
         buildGuiByCode();
 
+        shouldRequestMove = true;
+
         Handler handler = new Handler();
 
         handler.post(new Runnable() {
@@ -198,11 +200,9 @@ public class MainActivity extends AppCompatActivity {
     public void updateTurnStatus() {
         if (tttGame.getTurn() == player) {
             enableButtons(true);
-            shouldRequestMove = false;
             status.setText(tttGame.result());
         } else {
             enableButtons(false);
-            shouldRequestMove = true;
             status.setText(tttGame.result());
         }
     }
@@ -255,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
                 resetButtons();
                 status.setBackgroundColor(Color.GREEN);
                 status.setText(tttGame.result());
+                shouldRequestMove = true;
             } else if (id == -2) // NO button
                 MainActivity.this.finish();
         }

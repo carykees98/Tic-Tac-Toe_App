@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private int player = 2;
     private boolean shouldRequestMove;
 
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         shouldRequestMove = true;
 
-        Handler handler = new Handler();
+        handler = new Handler();
 
         handler.post(new Runnable() {
             @Override
@@ -58,6 +60,24 @@ public class MainActivity extends AppCompatActivity {
 
         updateTurnStatus();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();  // Always call the super method first
+
+        // Stop the repetitive handler callbacks
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+
+        // Determine the state of the game and call the appropriate method
+        if (tttGame != null && tttGame.isGameOver()) {
+            completeGame();
+        } else {
+            abortGame();
+        }
+    }
+
 
     public void requestMove() {
         if (!shouldRequestMove) return;

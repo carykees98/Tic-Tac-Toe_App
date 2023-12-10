@@ -1,6 +1,8 @@
 package clarkson.ee408.tictactoev4;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -10,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 
 import clarkson.ee408.tictactoev4.model.User;
+import clarkson.ee408.tictactoev4.PairingActivity;
+import clarkson.ee408.tictactoev4.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -48,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "Username and password cannot be empty", Toast.LENGTH_SHORT).show();
         } else {
             // TODO: Create User object with username and password and call submitLogin()
-            User user = new User(username, password);
+            User user = new User(username, password, null, true);
             submitLogin(user);
         }
     }
@@ -76,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void gotoPairing(String username) {
         // TODO: start PairingActivity and pass the username
-        startActivity(PairingActivity.createIntent(this, username));
+       startActivity(new Intent(LoginActivity.this, PairingActivity.class).putExtra("username", username));
     }
 
     /**
@@ -84,6 +88,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void gotoRegister() {
         // TODO: start RegisterActivity
-        startActivity(RegisterActivity.createIntent(this));
+        startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
     }
 }

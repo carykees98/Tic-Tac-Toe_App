@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // TODO: Create User object with username, display name, and password and call submitRegistration()
-        User user = new User(username, displayName,password);
+        User user = new User(username, displayName, password, true);
         submitRegistration(user);
     }
 

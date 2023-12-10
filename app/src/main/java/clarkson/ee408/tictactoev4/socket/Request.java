@@ -58,6 +58,7 @@ public class Request {
         UPDATE_PAIRING,
         SEND_INVITATION,
         ACCEPT_INVITATION,
+        DECLINE_INVITATION,
         ACKNOWLEDGE_RESPONSE,
         REQUEST_MOVE,
         SEND_MOVE,

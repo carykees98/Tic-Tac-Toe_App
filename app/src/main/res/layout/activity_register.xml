@@ -38,12 +38,30 @@
             android:inputType="textPersonName"/>
 
         <EditText
+            android:id="@+id/editTextDisplayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:ems="10"
+            android:hint="Enter Display Name"
+            android:inputType="textPersonName" />
+
+        <EditText
             android:id="@+id/editTextPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:ems="10"
             android:hint="Enter Password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/editTextConfirmPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:ems="10"
+            android:hint="Confirm Password"
             android:inputType="textPassword" />
 
         <Button

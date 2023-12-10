@@ -41,6 +41,8 @@ public class Response {
         return m_Status;
     }
 
+    public ResponseStatus getType() {return m_Status;}
+
     /**
      * enums for Response Status
      * handles
